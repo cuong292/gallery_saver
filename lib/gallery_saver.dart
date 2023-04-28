@@ -68,6 +68,7 @@ class GallerySaver {
       methodSaveImage,
       <String, dynamic>{'path': path, 'albumName': albumName, 'toDcim': toDcim},
     );
+    print('result $result');
     if (tempFile != null) {
       tempFile.delete();
     }
@@ -77,8 +78,6 @@ class GallerySaver {
 
   static Future<File> _downloadFile(String url,
       {Map<String, String>? headers}) async {
-    print(url);
-    print(headers);
     http.Client _client = new http.Client();
     var req = await _client.get(Uri.parse(url), headers: headers);
     if (req.statusCode >= 400) {
@@ -86,10 +85,8 @@ class GallerySaver {
     }
     var bytes = req.bodyBytes;
     String dir = (await getTemporaryDirectory()).path;
-    File file = new File('$dir/${basename(url)}');
+    File file = new File('$dir/${basename(url).split('?')[0]}');
     await file.writeAsBytes(bytes);
-    print('File size:${await file.length()}');
-    print(file.path);
     return file;
   }
 }
