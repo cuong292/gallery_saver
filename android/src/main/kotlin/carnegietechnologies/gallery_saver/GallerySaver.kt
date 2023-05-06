@@ -10,11 +10,12 @@ import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.*
 
 enum class MediaType { image, video }
+
 /**
  * Class holding implementation of saving images and videos
  */
 class GallerySaver internal constructor(private val activity: Activity) :
-    PluginRegistry.RequestPermissionsResultListener {
+        PluginRegistry.RequestPermissionsResultListener {
 
     private var pendingResult: MethodChannel.Result? = null
     private var mediaType: MediaType? = null
@@ -33,9 +34,9 @@ class GallerySaver internal constructor(private val activity: Activity) :
      * @param mediaType    - media type
      */
     internal fun checkPermissionAndSaveFile(
-        methodCall: MethodCall,
-        result: MethodChannel.Result,
-        mediaType: MediaType
+            methodCall: MethodCall,
+            result: MethodChannel.Result,
+            mediaType: MediaType
     ) {
         filePath = methodCall.argument<Any>(KEY_PATH)?.toString() ?: ""
         albumName = methodCall.argument<Any>(KEY_ALBUM_NAME)?.toString() ?: ""
@@ -47,9 +48,9 @@ class GallerySaver internal constructor(private val activity: Activity) :
             saveMediaFile()
         } else {
             ActivityCompat.requestPermissions(
-                activity,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION
+                    activity,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION
             )
         }
     }
@@ -57,7 +58,7 @@ class GallerySaver internal constructor(private val activity: Activity) :
     private fun isWritePermissionGranted(): Boolean {
         return PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
-                    activity, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        activity, Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
     }
 
@@ -76,17 +77,21 @@ class GallerySaver internal constructor(private val activity: Activity) :
     }
 
     private fun finishWithSuccess() {
-        pendingResult!!.success(true)
-        pendingResult = null
+        if (pendingResult != null) {
+            pendingResult!!.success(true)
+            pendingResult = null
+        }
     }
 
     private fun finishWithFailure() {
-        pendingResult!!.success(false)
-        pendingResult = null
+        if (pendingResult != null) {
+            pendingResult!!.success(false)
+            pendingResult = null
+        }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+            requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ): Boolean {
         if (requestCode == REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION) {
             val permissionGranted = grantResults.isNotEmpty()
